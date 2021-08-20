@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon</title>
+    <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+        <h1 class="h1">Pokemons</h1>
+        <nav class="links"></nav>
+        <main class="grid-fluid"></main>
+        <script>
+            
+            let apipoke="https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20";
+            const d=document,
+            $main=d.querySelector("main"),
+            $links=d.querySelector("links");
+
+            async function loadpokemons(url) {
+                try {
+
+                       $main.innerHTML='<img class="loader" src="https://img.icons8.com/material-outlined/96/000000/dots-loading--v7.png">';
+                       
+                    let res = await fetch(url),
+                        json=await res.json(),
+                        $template="",
+                        $prevlink,
+                        $netxlink;
+
+
+                        console.log(json);
+                        if (!res.ok) throw {
+                            status:res.status,
+                            statustext:res.statustext
+                            }
+
+                        for (i=0;(i<json.results.length);i++){
+                            console.log(json.results[i]);
+                            let res= await fetch (json.results[i].url),
+                                pokemon= await res.json();
+                            $template+=`<figure>
+                                        <img src='${pokemon.sprites.front_default}'>
+                                        <figcaption>${pokemon.name}</figcaption>
+                                    </figure>
+                            `;
+                        }
+                        $main.innerHTML=$template;
+                } catch (err) {
+                    console.log(err);
+                    $main.innerHTML='<p>se ha producido un error en la carga</p>'
+                }
+            }
+
+            d.addEventListener("DOMContentLoaded",e =>loadpokemons(apipoke));
+        </script>
+</body>
+
+</html>
